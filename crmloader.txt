@@ -1,0 +1,58 @@
+Xrm.Navigation.openAlertDialog(alertStrings, alertOptions);
+formContext.ui.clearFormNotification("progressNotification");
+
+
+var notificationOptions = {
+    type: 2, // 1: Error, 2: Warning, 3: Info
+    message: "Processing, please wait...",
+    level: 3 // 1: Low, 2: Medium, 3: High
+};
+Xrm.App.addGlobalNotification(notificationOptions).then(
+    function success(result) {
+        var notificationId = result;
+        // To clear the notification
+        Xrm.App.clearGlobalNotification(notificationId);
+    },
+    function error(error) {
+        console.log(error.message);
+    }
+);
+
+
+
+<div id="loadingSpinner" style="display:none;">
+    <div class="spinner"></div>
+</div>
+
+<style>
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    function showSpinner() {
+        document.getElementById("loadingSpinner").style.display = "block";
+    }
+
+    function hideSpinner() {
+        document.getElementById("loadingSpinner").style.display = "none";
+    }
+</script>
+
+
+
+
+formContext.ui.setFormNotification("Processing, please wait...", "INFO", "progressNotification");
+// To clear the notification
+formContext.ui.clearFormNotification("progressNotification");
