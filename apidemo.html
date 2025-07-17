@@ -1,0 +1,93 @@
+/*HTML code*/
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header d-flex align-items-center"><h6 class="card-title">Assets Detail View</h6></div>
+          <div class="card-body">
+            <div class="row">
+				<div class="col-md-12" id="assets_detail_left">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+/* Advance Code */
+
+var ID = '{{request.params["id"]}}'
+webapi.safeAjax({
+	type: "GET",
+	url: "/_api/msdyn_customerassets?$select=_msdyn_account_value,_dt_agreement_value,_msdyn_customerassetcategory_value,dt_cpn,dt_fl,dt_inarea,_dt_modality_value,msdyn_name,dt_oemsystemiid,dt_productid,dt_serial,dt_tag&$expand=dt_msdyn_agreement_asset_msdyn_customerasset($select=msdyn_agreementid,_msdyn_billingaccount_value,msdyn_name),msdyn_msdyn_customerasset_msdyn_workorder_CustomerAsset($select=_msdyn_serviceaccount_value,msdyn_name),dt_e8s_agreement_Asset_msdyn_customerasset($select=e8s_agreementid,_e8s_billingaccount_value,e8s_name),msdyn_product($select=productid,msdyn_productnumber)&$filter=msdyn_customerassetid eq {{request.params['id']}}",
+	async: "false",
+	contentType: "application/json",
+	headers: {
+		"Prefer": "odata.include-annotations=*"
+	},
+	success: function (data, textStatus, xhr) {
+		var results = data;
+        var DataHtml ='';
+		for (var i = 0; i < results.value.length; i++) {
+			var result = results.value[i]; 
+			// Columns
+			var msdyn_customerassetid = result["msdyn_customerassetid"]; // Guid
+			var msdyn_account = result["_msdyn_account_value"]; // Lookup
+			var msdyn_account_formatted = result["_msdyn_account_value@OData.Community.Display.V1.FormattedValue"];
+			var msdyn_account_lookuplogicalname = result["_msdyn_account_value@Microsoft.Dynamics.CRM.lookuplogicalname"];
+			var dt_agreement = result["_dt_agreement_value"]; // Lookup
+			var dt_agreement_formatted = result["_dt_agreement_value@OData.Community.Display.V1.FormattedValue"]?result["_dt_agreement_value@OData.Community.Display.V1.FormattedValue"]:"";
+			var dt_agreement_lookuplogicalname = result["_dt_agreement_value@Microsoft.Dynamics.CRM.lookuplogicalname"];
+			var msdyn_customerassetcategory = result["_msdyn_customerassetcategory_value"]; // Lookup
+			var msdyn_customerassetcategory_formatted = result["_msdyn_customerassetcategory_value@OData.Community.Display.V1.FormattedValue"]?result["_msdyn_customerassetcategory_value@OData.Community.Display.V1.FormattedValue"]:"";
+			var msdyn_customerassetcategory_lookuplogicalname = result["_msdyn_customerassetcategory_value@Microsoft.Dynamics.CRM.lookuplogicalname"];
+			var dt_cpn = result["dt_cpn"]?result["dt_cpn"]:""; // Text
+			
+			var dt_fl = result["dt_fl"]?result["dt_fl"]:""; // Text
+			var dt_inarea = result["dt_inarea"]; // Boolean
+			var dt_inarea_formatted = result["dt_inarea@OData.Community.Display.V1.FormattedValue"]?result["dt_inarea@OData.Community.Display.V1.FormattedValue"]:"";
+			var dt_modality = result["_dt_modality_value"]; // Lookup
+			var dt_modality_formatted = result["_dt_modality_value@OData.Community.Display.V1.FormattedValue"];
+			var dt_modality_lookuplogicalname = result["_dt_modality_value@Microsoft.Dynamics.CRM.lookuplogicalname"];
+			var msdyn_name = result["msdyn_name"]?result["msdyn_name"]:""; // Text
+			var dt_oemsystemiid = result["dt_oemsystemiid"]?result["dt_oemsystemiid"]:""; // Text
+			var dt_productid = result["dt_productid"]?result["dt_productid"]:""; // Text
+			var dt_serial = result["dt_serial"]?result["dt_serial"]:""; // Text
+			var dt_tag = result["dt_tag"]?result["dt_tag"]:""; // Text 
+			
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>Name</label>'
+			DataHtml += '<p>'+msdyn_name+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>Service Account</label>'
+			DataHtml += '<p>'+msdyn_account_formatted+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>FL Number</label>'
+			DataHtml += '<p>'+dt_fl+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>Tag Number</label>'
+			DataHtml += '<p>'+dt_tag+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>Serial Number</label>'
+			DataHtml += '<p>'+dt_serial+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>Category</label>'
+			DataHtml += '<p>'+msdyn_customerassetcategory_formatted+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>OEM System ID</label>'
+			DataHtml += '<p>'+dt_oemsystemiid+'</p>'
+			DataHtml += '</div>'
+			DataHtml += '<div class="form-group">'
+			DataHtml += '<label>CPN</label>'
+			DataHtml += '<p>'+dt_cpn+'</p>'
+			DataHtml += '</div>'
+		}
+		$('#assets_detail_left').html(DataHtml)
+	},
+	error: function (xhr, textStatus, errorThrown) {
+		console.log(xhr);
+	}
+});
