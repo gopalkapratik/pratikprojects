@@ -1,0 +1,73 @@
+
+<!--HTML Code-->
+<table id="myRequest" class="display table table-striped table-custom dataTableCustom" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="req_id_th">Request ID</th>
+                                        <th class="ven_name_th">Vendor Name</th>
+                                        <th class="ven_name_th">Vendor Number</th>
+                                        <th class="proc_cat_th">Procurement Category</th>
+                                        <th class="ven_type_th">Vendor Type</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="myPendingRequestListAll">
+                                </tbody>
+                            </table>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+<!--ADVANCE CODE-->
+var settings = {
+    "url": "{{ settings['AzureGetVendorRequest'] }}&id={{user.id}}",
+    "method": "GET",
+    "timeout": 0,
+};
+
+$.ajax(settings).done(function (response) {
+    var my_request_list = "";
+    var my_pending_request_list = "";
+    //response = response.filter(data => data.PrimaryContact == "{{user.id}}")
+    if (response.length > 0) {
+        for (i = 0; i < response.length; i++) {
+            var VendorName = response[i].VendorName ? response[i].VendorName : '-';
+            var VendorType = response[i].VendorType ? response[i].VendorType : '-';
+            var VendorProcurementCategory = response[i].VendorProcurementCategory ? response[i].VendorProcurementCategory : '-';
+            var VendorRequestName = response[i].VendorRequestName ? response[i].VendorRequestName : '-';
+            var ApprovalStatusName = response[i].ApprovalStatusName ? response[i].ApprovalStatusName : '-';
+            var ENVULegalEntityName = response[i].ENVULegalEntityName ? response[i].ENVULegalEntityName : '-';
+            var VendorRequestStatusText = response[i].VendorRequestStatusText ? response[i].VendorRequestStatusText : '-';
+            var VendorRequestId = response[i].VendorRequestId ? response[i].VendorRequestId : '-';
+            var RequestDate = response[i].RequestDate ? new Date(response[i].RequestDate).toString("MM/dd/yyyy") : '';
+            // var VendorRequestDate = response[i]. new Date(response[i].VendorRequestId).toString("dd-mm-yyyy")
+            var VendorRequestStatusVal = response[i].VendorRequestStatusVal ? response[i].VendorRequestStatusVal : '';
+            var VendorAccountNumber = response[i].VendorAccountNumber ? response[i].VendorAccountNumber : '-';
+            var ApprovalRequestFor = response[i].ApprovalRequestFor;
+            var ApprovalRequestForText = response[i].ApprovalRequestForText;
+            var ApprovalRequestStatusVal = response[i].ApprovalRequestStatusVal;
+            var Contact = response[i].Contact;
+            var ContactID = response[i].ContactID;
+            var ApprovalRequesStatuscodeVal = response[i].ApprovalRequesStatuscodeVal;
+            var ApprovalRequeststatecode = response[i].ApprovalRequeststatecode;
+
+my_request_list += "<tr>";
+                my_request_list += '<td id="request_id" data-label="Request ID">' + VendorRequestName + "</td>";
+                my_request_list += '<td id="vendor_name_id" data-label="Vendor Name">' + VendorName + "</td>";
+                my_request_list += '<td id="vendor_name_id" data-label="Vendor Number">' + VendorAccountNumber + "</td>";
+                my_request_list += '<td id="procurement_category_id" data-label="Procurement Category">' + VendorProcurementCategory + "</td>";
+                my_request_list += '<td id="vendor_type_id" data-label="Vendor Type">' + VendorType + "</td>";
+my_request_list += "</tr>";
+            
+
+        }
+        $('#myRequestListAll').html(my_request_list);
+    }
+    $("#myRequest").DataTable({
+        "ordering": false
+        //order: [[0, 'desc']]
+    });
+    $('.custom_loader').hide();
+    console.log(response)
+}).fail(function (jqXHR, textStatus, errorThrown) {
+    $('.custom_loader').hide();
+    $('#toastDanger').delay(500).fadeIn().delay(1500).fadeOut('slow');
+});
